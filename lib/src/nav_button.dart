@@ -6,6 +6,7 @@ class NavButton extends StatelessWidget {
   final int index;
   final ValueChanged<int> onTap;
   final Widget child;
+  final String? label;
 
   NavButton({
     required this.onTap,
@@ -13,6 +14,7 @@ class NavButton extends StatelessWidget {
     required this.length,
     required this.index,
     required this.child,
+    this.label,
   });
 
   @override
@@ -28,13 +30,23 @@ class NavButton extends StatelessWidget {
           onTap(index);
         },
         child: Container(
-            height: 75.0,
+            height: 86.0,
             child: Transform.translate(
               offset: Offset(
                   0, difference < 1.0 / length ? verticalAlignment * 40 : 0),
-              child: Opacity(
-                  opacity: difference < 1.0 / length * 0.99 ? opacity : 1.0,
-                  child: child),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Opacity(
+                      opacity: difference < 1.0 / length * 0.99 ? opacity : 1.0,
+                      child: difference < 1.0 / length * 0.99
+                          ? const SizedBox()
+                          : child),
+                  if (label != null && difference < 1.0 / length * 0.99)
+                    Text(label!),
+                ],
+              ),
             )),
       ),
     );
