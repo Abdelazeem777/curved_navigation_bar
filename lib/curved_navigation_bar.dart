@@ -6,7 +6,7 @@ import 'src/nav_custom_painter.dart';
 typedef _LetIndexPage = bool Function(int value);
 
 class CurvedNavigationBar extends StatefulWidget {
-  final List<IconData> icons;
+  final List<Widget> icons;
   final List<String>? labels;
   final int index;
   final Color color;
@@ -56,11 +56,7 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
   @override
   void initState() {
     super.initState();
-    _icon = Icon(
-      widget.icons[widget.index],
-      size: 32.0,
-      color: widget.selectedItemColor,
-    );
+    _icon = widget.icons[widget.index];
     _length = widget.icons.length;
     _pos = widget.index / _length;
     _startingPos = widget.index / _length;
@@ -71,11 +67,7 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
         final endingPos = _endingIndex / widget.icons.length;
         final middle = (endingPos + _startingPos) / 2;
         if ((endingPos - _pos).abs() < (_startingPos - _pos).abs()) {
-          _icon = Icon(
-            widget.icons[_endingIndex],
-            size: 32.0,
-            color: widget.selectedItemColor,
-          );
+          _icon = widget.icons[_endingIndex];
         }
         _buttonHide =
             (1 - ((middle - _pos) / (_startingPos - middle)).abs()).abs();
@@ -160,7 +152,7 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
                     length: _length,
                     label: widget.labels == null ? null : widget.labels![index],
                     index: widget.icons.indexOf(item),
-                    child: Icon(item, size: 28.0, color: Colors.grey),
+                    child: item,
                     labelColor: widget.selectedItemColor,
                   );
                 }).toList())),
