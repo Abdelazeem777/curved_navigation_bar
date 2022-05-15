@@ -7,6 +7,7 @@ class NavButton extends StatelessWidget {
   final ValueChanged<int> onTap;
   final Widget child;
   final String? label;
+  final Color labelColor;
 
   NavButton({
     required this.onTap,
@@ -15,6 +16,7 @@ class NavButton extends StatelessWidget {
     required this.index,
     required this.child,
     this.label,
+    this.labelColor = Colors.black,
   });
 
   @override
@@ -26,10 +28,8 @@ class NavButton extends StatelessWidget {
     return Expanded(
       child: GestureDetector(
         behavior: HitTestBehavior.translucent,
-        onTap: () {
-          onTap(index);
-        },
-        child: Container(
+        onTap: () => onTap(index),
+        child: SizedBox(
             height: 86.0,
             child: Transform.translate(
               offset: Offset(
@@ -39,12 +39,20 @@ class NavButton extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Opacity(
-                      opacity: difference < 1.0 / length * 0.99 ? opacity : 1.0,
-                      child: difference < 1.0 / length * 0.99
-                          ? const SizedBox()
-                          : child),
-                  if (label != null && difference < 1.0 / length * 0.99)
-                    Text(label!),
+                    opacity: difference < 1.0 / length * 0.99 ? opacity : 1.0,
+                    child: difference < 1.0 / length * 0.99
+                        ? const SizedBox()
+                        : child,
+                  ),
+                  if (label != null && difference < 1.0 / length * 0.99) ...[
+                    Text(label!,
+                        style: TextStyle(
+                          fontSize: 12.0,
+                          fontWeight: FontWeight.bold,
+                          color: labelColor,
+                        )),
+                    const SizedBox(height: 48.0),
+                  ]
                 ],
               ),
             )),

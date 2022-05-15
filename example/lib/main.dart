@@ -15,23 +15,25 @@ class _BottomNavBarState extends State<BottomNavBar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        extendBody: true,
         bottomNavigationBar: CurvedNavigationBar(
           key: _bottomNavigationKey,
           index: 0,
           height: 75.0,
-          items: <Widget>[
-            Icon(Icons.add, size: 24),
-            Icon(Icons.list, size: 24),
-            Icon(Icons.compare_arrows, size: 24),
-            Icon(Icons.call_split, size: 24),
-            Icon(Icons.perm_identity, size: 24),
+          icons: [
+            Icons.add,
+            Icons.list,
+            Icons.compare_arrows,
+            Icons.call_split,
+            Icons.perm_identity,
           ],
           labels: ['Add', 'List', 'Compare', 'Call', 'Profile'],
           color: Colors.white,
           buttonBackgroundColor: Colors.white,
-          backgroundColor: Colors.blueAccent,
+          backgroundColor: Colors.transparent,
           animationCurve: Curves.easeInOut,
           animationDuration: Duration(milliseconds: 600),
+          selectedItemColor: Colors.red,
           onTap: (index) {
             setState(() {
               _page = index;

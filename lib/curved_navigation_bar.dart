@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:meta/meta.dart';
 import 'package:collection/collection.dart';
 import 'src/nav_button.dart';
 import 'src/nav_custom_painter.dart';
@@ -7,7 +6,7 @@ import 'src/nav_custom_painter.dart';
 typedef _LetIndexPage = bool Function(int value);
 
 class CurvedNavigationBar extends StatefulWidget {
-  final List<Widget> items;
+  final List<IconData> icons;
   final List<String>? labels;
   final int index;
   final Color color;
@@ -18,10 +17,11 @@ class CurvedNavigationBar extends StatefulWidget {
   final Curve animationCurve;
   final Duration animationDuration;
   final double height;
+  final Color selectedItemColor;
 
   CurvedNavigationBar({
     Key? key,
-    required this.items,
+    required this.icons,
     this.index = 0,
     this.color = Colors.white,
     this.buttonBackgroundColor,
@@ -32,9 +32,10 @@ class CurvedNavigationBar extends StatefulWidget {
     this.animationDuration = const Duration(milliseconds: 600),
     this.height = 75.0,
     this.labels,
+    this.selectedItemColor = Colors.black,
   })  : letIndexChange = letIndexChange ?? ((_) => true),
-        assert(items.length >= 1),
-        assert(0 <= index && index < items.length),
+        assert(icons.length >= 1),
+        assert(0 <= index && index < icons.length),
         assert(0 <= height && height <= 75.0),
         super(key: key);
 
@@ -55,18 +56,26 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
   @override
   void initState() {
     super.initState();
-    _icon = widget.items[widget.index];
-    _length = widget.items.length;
+    _icon = Icon(
+      widget.icons[widget.index],
+      size: 32.0,
+      color: widget.selectedItemColor,
+    );
+    _length = widget.icons.length;
     _pos = widget.index / _length;
     _startingPos = widget.index / _length;
     _animationController = AnimationController(vsync: this, value: _pos);
     _animationController.addListener(() {
       setState(() {
         _pos = _animationController.value;
-        final endingPos = _endingIndex / widget.items.length;
+        final endingPos = _endingIndex / widget.icons.length;
         final middle = (endingPos + _startingPos) / 2;
         if ((endingPos - _pos).abs() < (_startingPos - _pos).abs()) {
-          _icon = widget.items[_endingIndex];
+          _icon = Icon(
+            widget.icons[_endingIndex],
+            size: 32.0,
+            color: widget.selectedItemColor,
+          );
         }
         _buttonHide =
             (1 - ((middle - _pos) / (_startingPos - middle)).abs()).abs();
@@ -95,8 +104,7 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Container(
-      color: widget.backgroundColor,
+    return SizedBox(
       height: widget.height,
       child: Stack(
         clipBehavior: Clip.none,
@@ -115,15 +123,11 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
               child: Transform.translate(
                 offset: Offset(
                   0,
-                  -(1 - _buttonHide) * 80,
+                  -(1 - _buttonHide) * 95,
                 ),
-                child: Material(
-                  color: widget.buttonBackgroundColor ?? widget.color,
-                  type: MaterialType.circle,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: _icon,
-                  ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: _icon,
                 ),
               ),
             ),
@@ -134,10 +138,12 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
             bottom: 0 - (75.0 - widget.height),
             child: CustomPaint(
               painter: NavCustomPainter(
-                  _pos, _length, widget.color, Directionality.of(context)),
-              child: Container(
-                height: 75.0,
+                _pos,
+                _length,
+                widget.color,
+                Directionality.of(context),
               ),
+              child: const SizedBox(height: 75.0),
             ),
           ),
           Positioned(
@@ -147,14 +153,15 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
             child: SizedBox(
                 height: 100.0,
                 child: Row(
-                    children: widget.items.mapIndexed((index, item) {
+                    children: widget.icons.mapIndexed((index, item) {
                   return NavButton(
                     onTap: _buttonTap,
                     position: _pos,
                     length: _length,
                     label: widget.labels == null ? null : widget.labels![index],
-                    index: widget.items.indexOf(item),
-                    child: Center(child: item),
+                    index: widget.icons.indexOf(item),
+                    child: Icon(item, size: 28.0, color: Colors.grey),
+                    labelColor: widget.selectedItemColor,
                   );
                 }).toList())),
           ),
