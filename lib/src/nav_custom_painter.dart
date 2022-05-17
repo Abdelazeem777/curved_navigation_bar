@@ -23,20 +23,20 @@ class NavCustomPainter extends CustomPainter {
 
     final path = Path()
       ..moveTo(0, 0)
-      ..lineTo((loc + s * .07) * size.width, 0)
-      ..lineTo((loc + s * .07) * size.width, size.height * .175)
+      ..lineTo((loc + s * .12) * size.width, 0)
+      ..lineTo((loc + s * .12) * size.width, size.height * .2)
       ..arcToPoint(
-        Offset((loc + s * 0.25) * size.width, size.height * .35),
+        Offset((loc + s * 0.35) * size.width, size.height * .4),
         radius: Radius.circular(15.0),
         clockwise: false,
       )
-      ..lineTo((loc + s * 0.75) * size.width, size.height * .35)
+      ..lineTo((loc + s * 0.65) * size.width, size.height * .4)
       ..arcToPoint(
-        Offset((loc + s - s * .07) * size.width, size.height * .175),
+        Offset((loc + s - s * .12) * size.width, size.height * .2),
         radius: Radius.circular(15.0),
         clockwise: false,
       )
-      ..lineTo((loc + s - s * .07) * size.width, 0.0)
+      ..lineTo((loc + s - s * .12) * size.width, 0.0)
 
       ///Another experiment
       // ..arcTo(
