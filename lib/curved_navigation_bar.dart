@@ -114,6 +114,8 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
             child: Center(
               child: Transform.translate(
                 offset: Offset(
+                 Directionality.of(context) == TextDirection.rtl?
+                 -16.0:
                   16.0,
                   -(1 - _buttonHide) * 95,
                 ),
