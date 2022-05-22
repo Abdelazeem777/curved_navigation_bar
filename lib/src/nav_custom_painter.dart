@@ -17,64 +17,39 @@ class NavCustomPainter extends CustomPainter {
   double degToRad(num deg) => deg * (Math.pi / 180.0);
   @override
   void paint(Canvas canvas, Size size) {
+    final isTablet = size.width > 600;
+
     final paint = Paint()
       ..color = color
       ..style = PaintingStyle.fill;
 
-    final path = Path()
-      ..moveTo(0, 0)
-      ..lineTo((loc + s * .12) * size.width, 0)
-      ..lineTo((loc + s * .12) * size.width, size.height * .2)
-      ..arcToPoint(
-        Offset((loc + s * 0.35) * size.width, size.height * .4),
-        radius: Radius.circular(15.0),
-        clockwise: false,
-      )
-      ..lineTo((loc + s * 0.65) * size.width, size.height * .4)
-      ..arcToPoint(
-        Offset((loc + s - s * .12) * size.width, size.height * .2),
-        radius: Radius.circular(15.0),
-        clockwise: false,
-      )
-      ..lineTo((loc + s - s * .12) * size.width, 0.0)
+    final path = Path();
+    path.moveTo(0, 0);
 
-      ///Another experiment
-      // ..arcTo(
-      //   Rect.fromLTWH(loc * size.width, 0, .5*(loc + s) * size.width, size.height),
-      //   degToRad(0),
-      //   degToRad(-90),
-      //   false,
-      // )
+    //Draw curve
+    final curveStartXPoint = (loc + s * .12) * size.width + (isTablet ? 30 : 0);
+    path.lineTo(curveStartXPoint, 0);
+    path.lineTo(curveStartXPoint, size.height * .2);
+    path.arcToPoint(
+      Offset(curveStartXPoint + 15, size.height * .4),
+      radius: Radius.circular(15.0),
+      clockwise: false,
+    );
 
-      /// A good way but not the best
-      // ..cubicTo(
-      //   (loc + s * 0.05) * size.width,
-      //   size.height * 0.7,
-      //   (loc + s) * size.width,
-      //   size.height * 0.7,
-      //   (loc + s) * size.width,
-      //   0,
-      // )
-      // ..cubicTo(
-      //   (loc + s * 0.20) * size.width,
-      //   size.height * 0.05,
-      //   loc * size.width,
-      //   size.height * 0.60,
-      //   (loc + s * 0.50) * size.width,
-      //   size.height * 0.60,
-      // )
-      // ..cubicTo(
-      //   (loc + s) * size.width,
-      //   size.height * 0.60,
-      //   (loc + s - s * 0.20) * size.width,
-      //   size.height * 0.05,
-      //   (loc + s + 0.1) * size.width,
-      //   0,
-      // )
-      ..lineTo(size.width, 0)
-      ..lineTo(size.width, size.height)
-      ..lineTo(0, size.height)
-      ..close();
+    final curveEndXPoint =
+        (loc + s - s * .12) * size.width - (isTablet ? 30 : 0);
+    path.lineTo(curveEndXPoint - 15, size.height * .4);
+    path.arcToPoint(
+      Offset(curveEndXPoint, size.height * .2),
+      radius: Radius.circular(15.0),
+      clockwise: false,
+    );
+    path.lineTo(curveEndXPoint, 0.0);
+
+    path.lineTo(size.width, 0);
+    path.lineTo(size.width, size.height);
+    path.lineTo(0, size.height);
+    path.close();
     canvas.drawPath(path, paint);
   }
 
