@@ -20,6 +20,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
           key: _bottomNavigationKey,
           index: 0,
           height: 70.0,
+          bottomMargin: 8.0,
           icons: [
             Icon(Icons.add),
             Icon(Icons.list),

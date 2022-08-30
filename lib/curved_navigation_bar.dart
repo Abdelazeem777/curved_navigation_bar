@@ -18,6 +18,7 @@ class CurvedNavigationBar extends StatefulWidget {
   final Duration animationDuration;
   final double height;
   final Color selectedItemColor;
+  final double bottomMargin;
 
   CurvedNavigationBar({
     Key? key,
@@ -33,6 +34,7 @@ class CurvedNavigationBar extends StatefulWidget {
     this.height = 75.0,
     this.labels,
     this.selectedItemColor = Colors.black,
+    this.bottomMargin = 0.0,
   })  : letIndexChange = letIndexChange ?? ((_) => true),
         assert(icons.length >= 1),
         assert(0 <= index && index < icons.length),
@@ -103,7 +105,7 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
         alignment: Alignment.bottomCenter,
         children: <Widget>[
           Positioned(
-            bottom: -40 - (75.0 - widget.height),
+            bottom: widget.bottomMargin - 40.0 - (75.0 - widget.height),
             left: Directionality.of(context) == TextDirection.rtl
                 ? null
                 : _pos * (size.width - 32.0),
@@ -114,9 +116,9 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
             child: Center(
               child: Transform.translate(
                 offset: Offset(
-                 Directionality.of(context) == TextDirection.rtl?
-                 -16.0:
-                  16.0,
+                  Directionality.of(context) == TextDirection.rtl
+                      ? -16.0
+                      : 16.0,
                   -(1 - _buttonHide) * 95,
                 ),
                 child: Padding(
@@ -127,9 +129,9 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
             ),
           ),
           Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
+            left: 0.0,
+            right: 0.0,
+            bottom: widget.bottomMargin,
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: ClipRRect(
@@ -149,7 +151,7 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
           Positioned(
             left: 0,
             right: 0,
-            bottom: 0 - (75.0 - widget.height),
+            bottom: widget.bottomMargin - (75.0 - widget.height),
             child: SizedBox(
                 height: 100.0,
                 child: Padding(
