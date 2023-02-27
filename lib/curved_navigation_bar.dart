@@ -6,7 +6,8 @@ import 'src/nav_custom_painter.dart';
 typedef _LetIndexPage = bool Function(int value);
 
 class CurvedNavigationBar extends StatefulWidget {
-  final List<Widget> icons;
+  final List<Widget>? icons;
+  final List<Widget Function(int)>? iconsBuilder;
   final List<String>? labels;
   final int index;
   final Color color;
@@ -22,7 +23,8 @@ class CurvedNavigationBar extends StatefulWidget {
 
   CurvedNavigationBar({
     Key? key,
-    required this.icons,
+    this.iconsBuilder,
+    this.icons,
     this.index = 0,
     this.color = Colors.white,
     this.buttonBackgroundColor,
@@ -36,8 +38,11 @@ class CurvedNavigationBar extends StatefulWidget {
     this.selectedItemColor = Colors.black,
     this.bottomMargin = 0.0,
   })  : letIndexChange = letIndexChange ?? ((_) => true),
-        assert(icons.length >= 1),
-        assert(0 <= index && index < icons.length),
+        assert(!(iconsBuilder == null && icons == null) &&
+            !(iconsBuilder != null && icons != null)),
+        assert((iconsBuilder?.length ?? 0) >= 1 || (icons?.length ?? 0) >= 1),
+        assert((0 <= index && index < (iconsBuilder?.length ?? 0)) ||
+            (0 <= index && index < (icons?.length ?? 0))),
         assert(0 <= height && height <= 75.0),
         super(key: key);
 
@@ -50,26 +55,40 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
   late double _startingPos;
   int _endingIndex = 0;
   late double _pos;
-  double _buttonHide = 0;
-  late Widget _icon;
+  num _buttonHide = 0;
+  Widget Function(int)? _iconBuilder;
+  Widget? _icon;
   late AnimationController _animationController;
   late int _length;
 
   @override
   void initState() {
     super.initState();
-    _icon = widget.icons[widget.index];
-    _length = widget.icons.length;
+    if (widget.iconsBuilder != null)
+      _iconBuilder = widget.iconsBuilder![widget.index];
+    if (widget.icons != null) _icon = widget.icons![widget.index];
+    if (widget.iconsBuilder != null)
+      _length = widget.iconsBuilder!.length;
+    else
+      _length = widget.icons!.length;
     _pos = widget.index / _length;
     _startingPos = widget.index / _length;
     _animationController = AnimationController(vsync: this, value: _pos);
     _animationController.addListener(() {
       setState(() {
         _pos = _animationController.value;
-        final endingPos = _endingIndex / widget.icons.length;
+        final endingPos;
+        if (widget.iconsBuilder != null)
+          endingPos = _endingIndex / widget.iconsBuilder!.length;
+        else
+          endingPos = _endingIndex / widget.icons!.length;
+
         final middle = (endingPos + _startingPos) / 2;
         if ((endingPos - _pos).abs() < (_startingPos - _pos).abs()) {
-          _icon = widget.icons[_endingIndex];
+          if (_iconBuilder != null)
+            _iconBuilder = widget.iconsBuilder![_endingIndex];
+          else
+            _icon = widget.icons![_endingIndex];
         }
         _buttonHide =
             (1 - ((middle - _pos) / (_startingPos - middle)).abs()).abs();
@@ -123,7 +142,9 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: _icon,
+                  child: widget.iconsBuilder != null
+                      ? _iconBuilder!(widget.index)
+                      : _icon,
                 ),
               ),
             ),
@@ -156,19 +177,36 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
                 height: 100.0,
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                      children: widget.icons.mapIndexed((index, item) {
-                    return NavButton(
-                      onTap: _buttonTap,
-                      position: _pos,
-                      length: _length,
-                      label:
-                          widget.labels == null ? null : widget.labels![index],
-                      index: widget.icons.indexOf(item),
-                      child: item,
-                      labelColor: widget.selectedItemColor,
-                    );
-                  }).toList()),
+                  child: widget.iconsBuilder != null
+                      ? Row(
+                          children:
+                              widget.iconsBuilder!.mapIndexed((index, item) {
+                          return NavButton(
+                            onTap: _buttonTap,
+                            position: _pos,
+                            length: _length,
+                            label: widget.labels == null
+                                ? null
+                                : widget.labels![index],
+                            index: widget.iconsBuilder!.indexOf(item),
+                            child: item(index),
+                            labelColor: widget.selectedItemColor,
+                          );
+                        }).toList())
+                      : Row(
+                          children: widget.icons!.mapIndexed((index, item) {
+                          return NavButton(
+                            onTap: _buttonTap,
+                            position: _pos,
+                            length: _length,
+                            label: widget.labels == null
+                                ? null
+                                : widget.labels![index],
+                            index: widget.icons!.indexOf(item),
+                            child: item,
+                            labelColor: widget.selectedItemColor,
+                          );
+                        }).toList()),
                 )),
           ),
         ],
